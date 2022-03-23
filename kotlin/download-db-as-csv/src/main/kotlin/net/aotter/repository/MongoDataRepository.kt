@@ -19,7 +19,10 @@ class MongoDataRepository : ReactivePanacheMongoRepository<MongoData> {
     init {
         createIndexes(
             IndexModel(
-                Indexes.descending(MongoData::createdTime.name)
+                Indexes.compoundIndex(
+                    Indexes.ascending(MongoData::gender.name),
+                    Indexes.descending(MongoData::createdTime.name)
+                )
             )
         )
     }

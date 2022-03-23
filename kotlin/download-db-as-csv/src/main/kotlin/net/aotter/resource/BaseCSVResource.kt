@@ -26,7 +26,7 @@ abstract class BaseCSVResource {
     ): String {
 
         // prepare chunked response of file download
-        val resp = with(rc.response()) {
+        val resp = rc.response().apply {
             putHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN)
             putHeader(
                 "Content-Disposition",
@@ -39,19 +39,16 @@ abstract class BaseCSVResource {
             )
             isChunked = true
             write("\ufeff") // BOM
-            this
         }
 
         val sb = StringBuilder()
 
-        //建立csv檔案
         val format = CSVFormat.EXCEL.builder()
             .setQuoteMode(QuoteMode.ALL)
             .setAutoFlush(true)
             .setHeader(*header.toTypedArray())
             .build()
 
-        //將內容print 到csv中
         CSVPrinter(sb, format).use { printer ->
 
             val printBatch: suspend (List<List<Any?>>) -> Unit = { lines ->
@@ -61,7 +58,7 @@ abstract class BaseCSVResource {
                 }
                 // write to response chunk
                 resp.write(sb.toString()).await()
-                // clear the builder for next batch of data
+                // clear the builder in order to process the next batch of data
                 sb.clear()
             }
 
