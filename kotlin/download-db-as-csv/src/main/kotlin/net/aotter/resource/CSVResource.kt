@@ -24,7 +24,7 @@ class CSVResource : BaseCSVResource() {
         val headers = listOf("id", "name", "city", "phone", "createdTime")
         return streamCsv(rc, filename, headers) { printBatch ->
             mongoDataRepository.scroll(
-                10,
+                100,
                 MongoData::createdTime.name,
                 { Date(it) },
                 Sort.ASC,
