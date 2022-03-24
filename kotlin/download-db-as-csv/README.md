@@ -131,6 +131,30 @@ suspend fun <Entity : ReactivePanacheMongoEntity> ReactivePanacheMongoRepository
 3. implement our own `ReactivePanacheMongoRepository` with `scroll` function
 
 ```kotlin
+/**
+ * The PO
+ * Note: we use no-arg plugin on [MongoEntity]
+ */
+@MongoEntity
+data class MongoData(
+    
+    // F or M
+    var gender: String,
+
+    var name: String,
+
+    var city: String,
+
+    var phone: String,
+    
+    var createdTime: Date
+
+) : ReactivePanacheMongoEntity()
+
+
+/**
+ * The Repository
+ */
 @Singleton
 class MongoDataRepository : ReactivePanacheMongoRepository<MongoData> {
 
@@ -143,10 +167,10 @@ class MongoDataRepository : ReactivePanacheMongoRepository<MongoData> {
     suspend fun scrollByGender(sizePerPage: Int, gender: String, handler: suspend (List<MongoData>) -> Unit) {
         this.scroll(
             sizePerPage,
-            MongoData::createdTime.name, //name of the field to perform time comparison query
+            MongoData::createdTime.name, // name of the field to perform time comparison query. Make sure it's indexed
             { Date(it) }, // function to convert millis to the type of MongoData.createdTime
             Sort.ASC, // deep paging sort direction
-            Filters.eq(MongoData::gender.name, gender), // query condition
+            Filters.eq(MongoData::gender.name, gender), // query condition. Make sure it's indexed
             handler
         )
     }
