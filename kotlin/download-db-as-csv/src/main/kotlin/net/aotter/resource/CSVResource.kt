@@ -1,12 +1,7 @@
 package net.aotter.resource
 
-import com.mongodb.client.model.Filters
 import io.vertx.ext.web.RoutingContext
-import net.aotter.model.MongoData
 import net.aotter.repository.MongoDataRepository
-import net.aotter.repository.Sort
-import net.aotter.repository.scroll
-import java.util.*
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.Path
@@ -22,16 +17,18 @@ class CSVResource : BaseCSVResource() {
     suspend fun downloadMongoData(rc: RoutingContext): String {
         val filename = "all-female"
         val headers = listOf("id", "name", "city", "phone", "createdTime")
+
+        // initiate a csv streaming response
         return streamCsv(rc, filename, headers) { printBatch ->
-            mongoDataRepository.scroll(
-                100,
-                MongoData::createdTime.name,
-                { Date(it) },
-                Sort.ASC,
-                Filters.eq(MongoData::gender.name, "F")
-            ) {
+
+            // deep paging via scrolling the whole dataset
+            mongoDataRepository.scrollByGender(100, "F") {
+
+                // build data of the rows
                 val page =
                     it.map { data -> with(data) { listOf(id?.toHexString(), name, city, phone, createdTime) } }
+
+                // print this batch of data to chunked response in csv format
                 printBatch(page)
             }
         }

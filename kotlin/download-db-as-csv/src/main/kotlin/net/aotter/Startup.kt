@@ -27,21 +27,23 @@ class Startup {
             val lorem = LoremIpsum.getInstance()
             mongoDataRepository.deleteAll().awaitSuspending()
             val currentTimeMillis = System.currentTimeMillis()
-            val list = (1..100000).map { n ->
-                val (gender, name) = if (n % 2 == 1) {
-                    Pair("M", lorem.nameMale)
-                } else {
-                    Pair("F", lorem.nameFemale)
+            (1..100000).chunked(1000).map { chunk ->
+                val list = chunk.map { n ->
+                    val (gender, name) = if (n % 2 == 1) {
+                        Pair("M", lorem.nameMale)
+                    } else {
+                        Pair("F", lorem.nameFemale)
+                    }
+                    MongoData(
+                        gender,
+                        name,
+                        lorem.city,
+                        lorem.phone,
+                        Date(currentTimeMillis + n)
+                    )
                 }
-                MongoData(
-                    gender,
-                    name,
-                    lorem.city,
-                    lorem.phone,
-                    Date(currentTimeMillis + n)
-                )
+                mongoDataRepository.mongoCollection().insertMany(list).awaitSuspending()
             }
-            mongoDataRepository.mongoCollection().insertMany(list).awaitSuspending()
         }
     }
 

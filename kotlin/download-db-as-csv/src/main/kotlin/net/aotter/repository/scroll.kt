@@ -2,6 +2,7 @@ package net.aotter.repository
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
+import io.quarkus.hibernate.reactive.panache.PanacheRepository
 import io.quarkus.mongodb.FindOptions
 import io.quarkus.mongodb.panache.kotlin.reactive.ReactivePanacheMongoEntity
 import io.quarkus.mongodb.panache.kotlin.reactive.ReactivePanacheMongoRepository
@@ -45,6 +46,10 @@ suspend fun <T> scroll(
         // find items with the same time value and exclude them in the next page.
         // convert time value to millis before comparing
         val exIds = list.filter { timeValueGetter(it) == toLI }.mapNotNull { idValueGetter(it) }
+        // prevent infinite looping
+        if (exIds.size == sizePerPage) {
+            throw IllegalArgumentException("Too many items with the same timeValue found. Either increase sizePerPage or use another timeValue for comparison.")
+        }
         // call recursively
         scroll(sizePerPage, supplier, idValueGetter, timeValueGetter, handler, toLI, exIds)
     }
@@ -75,7 +80,7 @@ suspend fun <Entity : ReactivePanacheMongoEntity> ReactivePanacheMongoRepository
 
         val col = mongoCollection()
 
-        // build time comparison query, which is the heart of efficient deep pagination
+        // build time-comparison query, which is the heart of efficient deep pagination
         val timeComparisonQuery = timeOfLastItem?.let {
             val d = timeValueConverter(it)
             if (sort == Sort.ASC) {
@@ -85,12 +90,12 @@ suspend fun <Entity : ReactivePanacheMongoEntity> ReactivePanacheMongoRepository
             }
         }
 
-        // build exclude by ids query to prevent duplicated result being return in this page if timestamp collides
+        // build exclude-by-ids query to prevent duplicated result being return in this page if timestamp collides
         val excludeIdsQuery = excludeIds?.let { ids ->
             Filters.nin("_id", ids.map { ObjectId(it) })
         }
 
-        // build the final filter that combine the main query condition with time comparison query and exclude by ids query
+        // build the final filter that combine the main query condition with time-comparison query and exclude-by-ids query
         val filter = listOfNotNull(query, timeComparisonQuery, excludeIdsQuery)
             .takeIf { it.isNotEmpty() }
             ?.let { Filters.and(it) }
@@ -128,6 +133,14 @@ suspend fun <Entity : ReactivePanacheMongoEntity> ReactivePanacheMongoRepository
         timeValueGetter,
         handler
     )
+}
+
+
+/**
+ * TODO: provide JPA example
+ */
+suspend fun <Entity> PanacheRepository<Entity>.scroll(){
+
 }
 
 
