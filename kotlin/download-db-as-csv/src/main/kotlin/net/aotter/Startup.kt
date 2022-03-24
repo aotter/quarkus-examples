@@ -26,8 +26,8 @@ class Startup {
         GlobalScope.async(Infrastructure.getDefaultExecutor().asCoroutineDispatcher()) {
             val lorem = LoremIpsum.getInstance()
             mongoDataRepository.deleteAll().awaitSuspending()
-            val currentTimeMillis = System.currentTimeMillis()
             (1..100000).chunked(1000).map { chunk ->
+                val currentTimeMillis = System.currentTimeMillis()
                 val list = chunk.map { n ->
                     val (gender, name) = if (n % 2 == 1) {
                         Pair("M", lorem.nameMale)
