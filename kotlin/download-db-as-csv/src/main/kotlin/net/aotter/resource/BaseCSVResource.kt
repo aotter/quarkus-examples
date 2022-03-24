@@ -10,7 +10,6 @@ import javax.ws.rs.core.MediaType
 
 abstract class BaseCSVResource {
 
-
     /**
      * generate csv file via streaming (chunked response)
      *
