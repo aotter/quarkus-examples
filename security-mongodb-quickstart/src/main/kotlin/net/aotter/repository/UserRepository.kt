@@ -7,7 +7,6 @@ import io.quarkus.mongodb.panache.kotlin.reactive.ReactivePanacheMongoRepository
 import io.smallrye.mutiny.Uni
 import net.aotter.constant.Role
 import net.aotter.model.po.User
-import org.bson.types.ObjectId
 import org.jboss.logging.Logger
 import javax.inject.Inject
 import javax.inject.Singleton
