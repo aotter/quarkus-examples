@@ -8,6 +8,7 @@ import io.smallrye.mutiny.Uni
 import net.aotter.constant.Role
 import net.aotter.model.User
 import org.jboss.logging.Logger
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,6 +40,6 @@ class UserRepository: ReactivePanacheMongoRepository<User> {
         return find("username", name).firstResult()
     }
 
-    private fun String.standardize() = trim().toLowerCase()
+    private fun String.standardize() = trim().lowercase(Locale.getDefault())
 
 }
