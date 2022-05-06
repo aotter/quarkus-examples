@@ -14,6 +14,8 @@ We try the four approaches to commit data into the database
 | 3   | Object | Y                 | `Panache.withTransaction` | Y                                                                                                        |
 | 4   | Object | Y                 | `@ReactiveTransactional`  | Exception: only `Uni` is supported when using `@ReactiveTransaction` if you are running on a VertxThread |
 
+reference: [hibernate-reactive-panache#transactions](https://quarkus.io/guides/hibernate-reactive-panache#transactions)
+
 ## Run
 ```
 ./mvnw compile quarkus:dev
