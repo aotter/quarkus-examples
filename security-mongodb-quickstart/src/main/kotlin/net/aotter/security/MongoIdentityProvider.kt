@@ -6,7 +6,6 @@ import io.quarkus.security.identity.IdentityProvider
 import io.quarkus.security.identity.SecurityIdentity
 import io.quarkus.security.identity.request.UsernamePasswordAuthenticationRequest
 import io.smallrye.mutiny.Uni
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.enterprise.context.ApplicationScoped
 
 

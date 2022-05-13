@@ -6,17 +6,17 @@ import io.quarkus.elytron.security.common.BcryptUtil
 import io.quarkus.mongodb.panache.kotlin.reactive.ReactivePanacheMongoRepository
 import io.smallrye.mutiny.Uni
 import net.aotter.constant.Role
-import net.aotter.model.po.User
-import org.bson.types.ObjectId
+import net.aotter.model.User
 import org.jboss.logging.Logger
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserRepository : ReactivePanacheMongoRepository<User> {
+class UserRepository: ReactivePanacheMongoRepository<User> {
 
     @Inject
-    lateinit var logger: Logger
+    private lateinit var logger: Logger
 
     init {
         mongoCollection().createIndex(
@@ -36,13 +36,10 @@ class UserRepository : ReactivePanacheMongoRepository<User> {
     fun create(username: String, password: String, roles: MutableSet<String>): Uni<User> =
         persist(User(username.standardize(), BcryptUtil.bcryptHash(password), roles))
 
+    fun findByName(name: String?): Uni<User?> {
+        return find("username", name).firstResult()
+    }
 
-    /**
-     * find user by username
-     */
-    fun findByUsername(username: String): Uni<User?> = find(User::username.name, username.standardize()).firstResult()
-
-
-    private fun String.standardize() = trim().toLowerCase()
+    private fun String.standardize() = trim().lowercase(Locale.getDefault())
 
 }

@@ -1,0 +1,18 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.aotter</groupId>
+    <artifactId>quarkus-examples</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>download-db-as-csv</module>
+        <module>security-authentication-mechanism-customize-quickstart</module>
+        <module>security-mongodb-quickstart</module>
+        <module>hibernate-reactive-panache-quickstart-kotlin</module>
+    </modules>
+
+</project>
