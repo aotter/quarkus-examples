@@ -13,6 +13,7 @@
         <module>security-authentication-mechanism-customize-quickstart</module>
         <module>security-mongodb-quickstart</module>
         <module>hibernate-reactive-panache-quickstart-kotlin</module>
+        <module>jackson-dataclass-kotlin</module>
     </modules>
 
 </project>
